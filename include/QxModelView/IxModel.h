@@ -347,7 +347,7 @@ protected:
    IxModel * getChild(long row, const QString & relation);
    void insertChild(long row, const QString & relation, IxModel * pChild);
    void removeListOfChild(long row);
-   bool removeRowsGeneric(int row, int count);
+   bool removeRowsGeneric(int row, int count, const QModelIndex& parent = QModelIndex());
    bool removeRowsAutoUpdateOnFieldChange(int row, int count);
 
 #ifndef _QX_NO_JSON

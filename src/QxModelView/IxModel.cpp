@@ -424,20 +424,23 @@ Qt::DropActions IxModel::supportedDropActions() const
 
 bool IxModel::removeRows(int row, int count, const QModelIndex & parent /* = QModelIndex() */)
 {
-   if (parent.isValid()) { return false; }
    if (m_eAutoUpdateDatabase == IxModel::e_auto_update_on_field_change) { return removeRowsAutoUpdateOnFieldChange(row, count); }
-   return removeRowsGeneric(row, count);
+   return removeRowsGeneric(row, count, parent);
 }
 
-bool IxModel::removeRowsGeneric(int row, int count)
-{
-   if (! m_pCollection) { qAssert(false); return false; }
-   beginRemoveRows(QModelIndex(), row, (row + count - 1));
-   for (int i = 0; i < count; ++i)
-   { m_pCollection->_remove(row); removeListOfChild(row); }
-   updateShowEmptyLine();
-   endRemoveRows();
-   return true;
+bool IxModel::removeRowsGeneric(int row, int count, const QModelIndex& parent /* = QModelIndex() */) {
+    if (!m_pCollection) {
+        qAssert(false);
+        return false;
+    }
+    beginRemoveRows(parent, row, (row + count - 1));
+    for (int i = 0; i < count; ++i) {
+        m_pCollection->_remove(row);
+        removeListOfChild(row);
+    }
+    updateShowEmptyLine();
+    endRemoveRows();
+    return true;
 }
 
 bool IxModel::removeRowsAutoUpdateOnFieldChange(int row, int count)
