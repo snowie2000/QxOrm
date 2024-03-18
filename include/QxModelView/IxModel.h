@@ -308,22 +308,21 @@ protected:
 #endif // (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 
 public:
+    Q_INVOKABLE void clear(bool bUpdateColumns = false);
 
-   Q_INVOKABLE void clear(bool bUpdateColumns = false);
-
-   virtual QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const;
-   virtual bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
-   virtual int rowCount(const QModelIndex & parent = QModelIndex()) const;
-   virtual int columnCount(const QModelIndex & parent = QModelIndex()) const;
-   virtual QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
-   virtual QModelIndex parent(const QModelIndex & index) const;
-   virtual bool hasChildren(const QModelIndex & parent = QModelIndex()) const;
-   virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-   virtual Qt::ItemFlags flags(const QModelIndex & index) const;
-   virtual Qt::DropActions supportedDropActions() const;
-   virtual bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
-   virtual bool setHeaderData(int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole);
-   bool setHeaderData(const QString & sColumnName, const QVariant & value, int role = Qt::EditRole);
+    virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    virtual bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    virtual int columnCount(const QModelIndex& parent = QModelIndex()) const;
+    virtual QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+    virtual QModelIndex parent(const QModelIndex& index) const;
+    virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const;
+    virtual Qt::DropActions supportedDropActions() const;
+    virtual bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
+    virtual bool setHeaderData(int section, Qt::Orientation orientation, const QVariant& value, int role = Qt::EditRole);
+    bool setHeaderData(const QString& sColumnName, const QVariant& value, int role = Qt::EditRole);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
    virtual QHash<int, QByteArray> roleNames() const;
@@ -360,6 +359,12 @@ protected:
 
 #endif // _QX_NO_JSON
 
+   // extra functions added
+   virtual void removeAllRows() { clear(); } // same as clear(), but overridable, internal use only, DO NOT call it manually
+   void doRemoveAllRows(IxModel* model) { model->removeAllRows(); }
+
+   public:
+   virtual QSqlError qxSaveDirty(const QStringList& relation = QStringList(), QSqlDatabase* pDatabase = NULL) { return qxSave(relation, pDatabase); };
 };
 
 } // namespace qx

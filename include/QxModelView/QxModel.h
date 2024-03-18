@@ -496,6 +496,15 @@ public:
       return this->m_lastError;
    }
 
+   virtual QSqlError qxDeleteById(std::vector<std::shared_ptr<T>>& list, QSqlDatabase* pDatabase = NULL) {
+       if (!this->m_pDataMemberId) {
+           qDebug("[QxOrm] problem with 'qxDeleteById()' method : '%s'", "data member id not registered");
+           qAssert(false);
+       }
+       this->m_lastError = qx::dao::delete_by_id(list, this->database(pDatabase));
+       return this->m_lastError;
+   }
+
    /*!
     * \brief Delete all lines of a table (database) mapped to a C++ class T (registered into QxOrm context), if no error occurred then you should clear the model
     * \param pDatabase Connection to database (you can manage your own connection pool for example, you can also define a transaction, etc.); if NULL, a valid connection for the current thread is provided by qx::QxSqlDatabase singleton class (optional parameter)
