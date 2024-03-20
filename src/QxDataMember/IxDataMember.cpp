@@ -384,6 +384,8 @@ QString IxDataMember::getSqlAlias(const QString & sTable /* = QString() */, bool
    QString sSqlAlias;
    QString sTableAlias = sTable;
    sTableAlias.replace(".", "_");
+   sTableAlias.replace("[", "_");
+   sTableAlias.replace("]", "_");
 
    do
    {

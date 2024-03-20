@@ -232,7 +232,7 @@ public:
    Q_INVOKABLE void setAutoUpdateDatabase_(int i);
    void setAutoUpdateDatabase(e_auto_update_database e);
    Q_INVOKABLE virtual void setShowEmptyLine(bool b) = 0;
-   Q_INVOKABLE void setCustomProperty(const QString & key, const QVariant & val);
+   Q_INVOKABLE virtual void setCustomProperty(const QString& key, const QVariant& val);
 
    Q_INVOKABLE QString toJson(int row = -1) const;                   //!< On QML side, use JSON.parse() to create a javascript object after calling this qx::IxModel::toJson() method
    Q_INVOKABLE bool fromJson(const QString & json, int row = -1);    //!< On QML side, use JSON.stringify() on a javascript object before calling this qx::IxModel::fromJson() method

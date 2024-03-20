@@ -80,6 +80,8 @@ QString QxSoftDelete::buildSqlTablePointName(const QString & sTable /* = QString
    if (this->isEmpty()) { return ""; }
    QString sCurrTable = (sTable.isEmpty() ? m_sTable : sTable);
    sCurrTable.replace(".", "_");
+   sCurrTable.replace("[", "_");
+   sCurrTable.replace("]", "_");
    return (sCurrTable + "." + m_sColumn);
 }
 
@@ -87,6 +89,8 @@ QString QxSoftDelete::buildSqlQueryToFetch(const QString & sTable /* = QString()
 {
    QString sCurrTable = (sTable.isEmpty() ? m_sTable : sTable);
    sCurrTable.replace(".", "_");
+   sCurrTable.replace("[", "_");
+   sCurrTable.replace("]", "_");
    if (this->isEmpty()) { return ""; }
    else if (! m_sSqlQueryToFetch.isEmpty()) { return m_sSqlQueryToFetch; }
    else if (m_eMode == QxSoftDelete::mode_flag) { return ("(" + sCurrTable + "." + m_sColumn + " IS NULL" + " OR " + sCurrTable + "." + m_sColumn + " = ''" + " OR " + sCurrTable + "." + m_sColumn + " = '0'" + ")"); }

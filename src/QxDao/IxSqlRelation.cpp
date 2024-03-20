@@ -310,6 +310,8 @@ QString IxSqlRelation::tableAlias(QxSqlRelationParams & params) const
    if (! params.getCustomAlias().isEmpty()) { return params.getCustomAlias(); }
    QString sTableAlias = (m_pImpl->m_pDataMemberX ? (m_pImpl->m_pDataMemberX->getName() + "_" + QString::number(params.index())) : QString(""));
    sTableAlias.replace(".", "_");
+   sTableAlias.replace("[", "_");
+   sTableAlias.replace("]", "_");
    return IxDataMember::getSqlTableNameAlias(sTableAlias);
 }
 
@@ -321,6 +323,8 @@ QString IxSqlRelation::tableAliasOwner(QxSqlRelationParams & params) const
    if (params.indexOwner() <= 0) { sTableAliasOwner = params.builder().table(); }
    if (! params.getTableAlias().isEmpty()) { sTableAliasOwner = params.getTableAlias(); }
    sTableAliasOwner.replace(".", "_");
+   sTableAliasOwner.replace("[", "_");
+   sTableAliasOwner.replace("]", "_");
    return sTableAliasOwner;
 }
 
