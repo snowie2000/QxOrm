@@ -512,6 +512,9 @@ HEADERS += ./include/QxDaoRepository.h
 HEADERS += ./include/QxModelView.h
 HEADERS += ./include/QxServices.h
 
+# hooks
+HEADERS += ./include/QxHook/QxFarLand.h
+
 #################
 # Sources Files #
 #################
@@ -682,6 +685,9 @@ SOURCES += ./src/QxModelView/QxNestedModel.cpp
 SOURCES += ./src/QxModelView/QxModelRowCompare.cpp
 
 SOURCES += ./src/main.cpp
+
+# hooks
+SOURCES += ./src/QxHook/QxFarLand.cpp
 
 } else {
 

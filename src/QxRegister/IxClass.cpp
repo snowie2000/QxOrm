@@ -31,6 +31,7 @@
 
 #include <QxPrecompiled.h>
 
+#include <QxHook/QxFarLand.h>
 #include <QxRegister/IxClass.h>
 #include <QxRegister/QxClassX.h>
 
@@ -99,7 +100,13 @@ IxClass::~IxClass()
 
 QString IxClass::getKey() const { return m_pImpl->m_sKey; }
 
-QString IxClass::getName() const { return m_pImpl->m_sName; }
+QString IxClass::getName() const {
+    QString tableName = m_pImpl->m_sName;
+    if (!tableName.isEmpty()) {
+        callHook(QX_HOOK_TABLENAME, getKey(), &tableName);
+    }
+    return tableName;
+}
 
 const char * IxClass::getNamePtr() const { return m_pImpl->m_pName; }
 

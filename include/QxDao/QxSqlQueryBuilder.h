@@ -55,13 +55,16 @@
 #define QX_SQL_ERR_NO_DATA_MEMBER_REGISTERED    "'QxSqlQueryBuilder<T>' error : 'qx::register_class()' not called or no data member registered"
 #define QX_SQL_ERR_NO_ID_REGISTERED             "'QxSqlQueryBuilder<T>' error : no id registered"
 
-#define QX_SQL_BUILDER_INIT_FCT(oper) \
-qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql); \
-QString joinQueryHash = (this->getDaoHelper() ? this->getDaoHelper()->qxQuery().getJoinQueryHash() : QString()); \
-QString ignoreSoftDeleteHash = (this->getDaoHelper() ? this->getDaoHelper()->getIgnoreSoftDeleteHash() : QString()); \
-QString key = QxClass<type_sql>::getSingleton()->getKey() + joinQueryHash + ignoreSoftDeleteHash + oper; \
-if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) { return (* this); } \
-QString & sql = this->getCurrentBuildingSql(); sql = "";
+#define QX_SQL_BUILDER_INIT_FCT(oper)                                                                                                                             \
+    qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql);                                                     \
+    QString joinQueryHash = (this->getDaoHelper() ? this->getDaoHelper()->qxQuery().getJoinQueryHash() : QString());                                              \
+    QString ignoreSoftDeleteHash = (this->getDaoHelper() ? this->getDaoHelper()->getIgnoreSoftDeleteHash() : QString());                                          \
+    QString key = QxClass<type_sql>::getSingleton()->getKey() + "@" + QxClass<type_sql>::getSingleton()->getName() + joinQueryHash + ignoreSoftDeleteHash + oper; \
+    if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) {                                                                                                 \
+        return (*this);                                                                                                                                           \
+    }                                                                                                                                                             \
+    QString& sql = this->getCurrentBuildingSql();                                                                                                                 \
+    sql = "";
 
 #define QX_SQL_BUILDER_INIT_FCT_WITH_RELATION(oper) \
 qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql); \
