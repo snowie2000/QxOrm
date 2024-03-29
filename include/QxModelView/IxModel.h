@@ -365,6 +365,10 @@ protected:
 
    public:
    virtual QSqlError qxSaveDirty(const QStringList& relation = QStringList(), QSqlDatabase* pDatabase = NULL) { return qxSave(relation, pDatabase); };
+
+   signals:
+   void DataChanged(const QModelIndex& index, QString field, QVariant oldValue, QVariant value);
+   void DataDeleted(const QModelIndex& parent, int startRow, QStringList deletedData);
 };
 
 } // namespace qx
