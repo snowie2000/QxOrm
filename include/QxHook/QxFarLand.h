@@ -23,12 +23,6 @@ using TableHookFunction = std::function<void(QString* tableName)>;
 #define QX_HOOK_TABLENAME "tableHook"
 #define QX_HOOK_FIELDNAME "fieldHook"
 
-template <typename T, typename... Args>
-QString registerHook(QString hookType, std::function<void(Args... args)> fn) {
-    QString className = qx::QxClass<T>::getSingleton()->getKey();
-    return registerHook(hookType, className, fn);
-}
-
 template <typename... Args>
 QString registerHook(QString hookType, QString className, std::function<void(Args... args)> fn) {
     QString hookId = QString("tbl_%1_ty_%2_sn_%3").arg(className, hookType).arg(++hookCounter);
@@ -44,6 +38,12 @@ QString registerHook(QString hookType, QString className, std::function<void(Arg
     }
     hooks[hookType].insert(hookId, fn);
     return hookId;
+}
+
+template <typename T, typename... Args>
+QString registerHook(QString hookType, std::function<void(Args... args)> fn) {
+    QString className = qx::QxClass<T>::getSingleton()->getKey();
+    return registerHook(hookType, className, fn);
 }
 
 void unregisterHook(QString hookId);
