@@ -97,6 +97,10 @@ public:
       IxSqlRelation::init();
    }
 
+   virtual void clearData(void* owner) override {
+       clearContainer((DataType*)owner);
+   }
+
 protected:
 
    DataType * getDataTypePtr(QxSqlRelationParams & params) const
@@ -181,6 +185,12 @@ private:
    struct isNullData_Helper<true, dummy>
    { static bool get(DataType * t) { return ((! (* t)) ? true : false); } };
 
+   template <typename T>
+   void clearContainer(T*) {};
+   template <typename T>
+   void clearContainer(std::vector<T>* t) { t->clear(); }
+   template <typename T, typename V>
+   void clearContainer(QxCollection<T, V>* t) { t->clear(); }
 };
 
 } // namespace qx

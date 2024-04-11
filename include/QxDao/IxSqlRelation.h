@@ -113,6 +113,7 @@ public:
    bool traceSqlQuery() const;
 
    virtual void init();
+   virtual void clearData(void*) {}; // added by snowie, clear the container data
    virtual QString getDescription() const = 0;
    virtual QString createExtraTable() const = 0;
    virtual bool getCartesianProduct() const = 0;
