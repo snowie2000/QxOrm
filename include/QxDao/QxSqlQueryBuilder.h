@@ -66,13 +66,17 @@
     QString& sql = this->getCurrentBuildingSql();                                                                                                                 \
     sql = "";
 
-#define QX_SQL_BUILDER_INIT_FCT_WITH_RELATION(oper) \
-qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql); \
-QString joinQueryHash = (this->getDaoHelper() ? this->getDaoHelper()->qxQuery().getJoinQueryHash() : QString()); \
-QString ignoreSoftDeleteHash = (this->getDaoHelper() ? this->getDaoHelper()->getIgnoreSoftDeleteHash() : QString()); \
-QString key = QxClass<type_sql>::getSingleton()->getKey() + joinQueryHash + this->getHashRelation() + ignoreSoftDeleteHash + oper; \
-if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) { this->findSqlAlias(key); return (* this); } \
-QString & sql = this->getCurrentBuildingSql(); sql = "";
+#define QX_SQL_BUILDER_INIT_FCT_WITH_RELATION(oper)                                                                                                                                         \
+    qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql);                                                                               \
+    QString joinQueryHash = (this->getDaoHelper() ? this->getDaoHelper()->qxQuery().getJoinQueryHash() : QString());                                                                        \
+    QString ignoreSoftDeleteHash = (this->getDaoHelper() ? this->getDaoHelper()->getIgnoreSoftDeleteHash() : QString());                                                                    \
+    QString key = QxClass<type_sql>::getSingleton()->getKey() + "@" + QxClass<type_sql>::getSingleton()->getName() + joinQueryHash + this->getHashRelation() + ignoreSoftDeleteHash + oper; \
+    if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) {                                                                                                                           \
+        this->findSqlAlias(key);                                                                                                                                                            \
+        return (*this);                                                                                                                                                                     \
+    }                                                                                                                                                                                       \
+    QString& sql = this->getCurrentBuildingSql();                                                                                                                                           \
+    sql = "";
 
 namespace qx {
 
