@@ -480,6 +480,37 @@ QString IxDataMember::getSqlPlaceHolder(const QString & sAppend /* = QString() *
    return sResult;
 }
 
+void IxDataMember::setNullSqlPlaceHolder(QSqlQuery& query, void* pOwner, const QString& sAppend /* = QString() */, const QString& sOtherName /* = QString() */, bool bCheckFKPartOfPK /* = false */, qx::QxCollection<QString, QVariantList>* pLstExecBatch /* = NULL */) const {
+    int iIndexNameFK = 0;
+    IxSqlRelation* pRelation = NULL;
+    bool bQuestionMark = (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark);
+
+    for (int i = 0; i < m_pImpl->m_lstNames.count(); i++) {
+        if (bCheckFKPartOfPK && m_pImpl->m_bIsPrimaryKey && isThereRelationPartOfPrimaryKey(i, pRelation, iIndexNameFK)) {
+            continue;
+        }
+        QString key = (bQuestionMark ? QString() : getSqlPlaceHolder(sAppend, i, "", sOtherName));
+        QVariant val;
+        if (pLstExecBatch) {
+            if (bQuestionMark) {
+                key = getName(i, sOtherName);
+            }
+            if (!pLstExecBatch->exist(key)) {
+                QVariantList empty;
+                pLstExecBatch->insert(key, empty);
+            }
+            QVariantList& values = const_cast<QVariantList&>(pLstExecBatch->getByKey(key));
+            values.append(val);
+        } else {
+            if (bQuestionMark) {
+                query.addBindValue(val);
+            } else {
+                query.bindValue(key, val);
+            }
+        }
+    }
+}
+
 void IxDataMember::setSqlPlaceHolder(QSqlQuery & query, void * pOwner, const QString & sAppend /* = QString() */, const QString & sOtherName /* = QString() */, bool bCheckFKPartOfPK /* = false */, qx::QxCollection<QString, QVariantList> * pLstExecBatch /* = NULL */) const
 {
    int iIndexNameFK = 0;

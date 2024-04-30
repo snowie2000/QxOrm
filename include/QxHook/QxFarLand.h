@@ -1,15 +1,15 @@
 #ifndef _QX_FARLAND_H_
 #define _QX_FARLAND_H_
 
-#include "QxOrm.h"
 #include <QMutex>
 #include <QString>
 #include <QThread>
-#include <any>
+#include <QxCollection/QxCollection.h>
+#include <QxCommon/QxAny.h>
+#include <QxRegister/QxClass.h>
 #include <atomic>
 #include <functional>
 #include <map>
-#include <vector>
 
 namespace qx {
 typedef qx::QxCollection<QString, qx::any> hook_list;

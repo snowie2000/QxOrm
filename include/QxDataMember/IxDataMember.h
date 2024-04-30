@@ -184,6 +184,7 @@ public:
    QString getSqlType(int iIndexName = -1) const;
    QString getSqlTypeAndParams(int iIndexName = -1) const;
    QString getSqlPlaceHolder(const QString & sAppend = QString(), int iIndexName = 0, const QString & sSep = QString(", "), const QString & sOtherName = QString(), bool bCheckFKPartOfPK = false) const;
+   void setNullSqlPlaceHolder(QSqlQuery& query, void* pOwner, const QString& sAppend = QString(), const QString& sOtherName = QString(), bool bCheckFKPartOfPK = false, qx::QxCollection<QString, QVariantList>* pLstExecBatch = NULL) const;
    void setSqlPlaceHolder(QSqlQuery & query, void * pOwner, const QString & sAppend = QString(), const QString & sOtherName = QString(), bool bCheckFKPartOfPK = false, qx::QxCollection<QString, QVariantList> * pLstExecBatch = NULL) const;
    QString getSqlAliasEqualToPlaceHolder(const QString & sTable = QString(), bool bClauseWhere = false, const QString & sAppend = QString(), const QString & sSep = QString(" AND "), bool bCheckFKPartOfPK = false, qx::IxSqlQueryBuilder * pSqlQueryBuilder = NULL) const;
    QString getSqlNameEqualToPlaceHolder(const QString & sAppend = QString(), const QString & sSep = QString(" AND "), bool bCheckFKPartOfPK = false, qx::IxSqlQueryBuilder * pSqlQueryBuilder = NULL) const;

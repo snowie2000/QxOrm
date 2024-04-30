@@ -434,13 +434,24 @@ void IxSqlQueryBuilder::sql_Insert(QString & sql, IxSqlQueryBuilder & builder)
    qx::QxSqlRelationParams params(0, 0, (& sql), (& builder), NULL, NULL);
    QString table = builder.table(); QString tmp;
    sql = "INSERT INTO " + qx::IxDataMember::getSqlTableName(table) + " (";
-   if (pId && ! pId->getAutoIncrement()) { tmp = pId->getSqlName(", ", "", true, (& builder)); if (! tmp.isEmpty()) { sql += tmp + ", "; } }
+   // always add symbol for autoincrement
+   if (pId /*&& ! pId->getAutoIncrement()*/) {
+       tmp = pId->getSqlName(", ", "", true, (&builder));
+       if (!tmp.isEmpty()) {
+           sql += tmp + ", ";
+       }
+   }
    while ((p = builder.nextData(l1))) { sql += p->getSqlName(", ", "", false, (& builder)) + ", "; }
    while ((pRelation = builder.nextRelation(l2))) { params.setIndex(l2); pRelation->lazyInsert(params); }
    sql = sql.left(sql.count() - 2); // Remove last ", "
    sql += ") VALUES (";
    l1 = 0; l2 = 0; p = NULL; pRelation = NULL;
-   if (pId && ! pId->getAutoIncrement()) { tmp = pId->getSqlPlaceHolder("", -1, ", ", "", true); if (! tmp.isEmpty()) { sql += tmp + ", "; } }
+   if (pId /*&& ! pId->getAutoIncrement()*/) {
+       tmp = pId->getSqlPlaceHolder("", -1, ", ", "", true);
+       if (!tmp.isEmpty()) {
+           sql += tmp + ", ";
+       }
+   }
    while ((p = builder.nextData(l1))) { sql += p->getSqlPlaceHolder("", -1, ", ") + ", "; }
    while ((pRelation = builder.nextRelation(l2))) { params.setIndex(l2); pRelation->lazyInsert_Values(params); }
    sql = sql.left(sql.count() - 2); // Remove last ", "
@@ -565,7 +576,17 @@ void IxSqlQueryBuilder::resolveInput_Insert(void * t, QSqlQuery & query, IxSqlQu
    bool bUseExecBatch = (builder.getDaoHelper() ? builder.getDaoHelper()->getUseExecBatch() : false);
    qx::QxCollection<QString, QVariantList> * pLstExecBatch = (bUseExecBatch ? (& builder.getDaoHelper()->getListExecBatch()) : NULL);
    qx::QxSqlRelationParams params(0, 0, NULL, (& builder), (& query), t, QVariant(), pLstExecBatch);
-   if (pId && ! pId->getAutoIncrement()) { pId->setSqlPlaceHolder(query, t, "", "", true, pLstExecBatch); }
+   // original code:
+   // if (pId && ! pId->getAutoIncrement()) { pId->setSqlPlaceHolder(query, t, "", "", true, pLstExecBatch); }
+   // modified:
+   if (pId) {
+       if (!pId->getAutoIncrement() || qx::trait::is_valid_primary_key(pId->toVariant(t, -1, qx::cvt::context::e_database)))
+           pId->setSqlPlaceHolder(query, t, "", "", true, pLstExecBatch);
+       else {
+           // use null as the default primary key to fallback to autoincrement
+           pId->setNullSqlPlaceHolder(query, t, "", "", true, pLstExecBatch);
+       }
+   }
    while ((p = builder.nextData(l1))) { p->setSqlPlaceHolder(query, t, "", "", false, pLstExecBatch); }
    while ((pRelation = builder.nextRelation(l2))) { params.setIndex(l2); pRelation->lazyInsert_ResolveInput(params); }
 }
