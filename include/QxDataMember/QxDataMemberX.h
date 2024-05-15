@@ -95,8 +95,12 @@ public:
 
    template <typename V, typename U> IxDataMember * add(V U::* pData, const QString & sKey, long lVersion = 0, bool bSerialize = true, bool bDao = true);
    template <typename V, typename U> IxSqlRelation * relationOneToOne(V U::* pData, const QString & sKey, long lVersion = 0);
+   template <typename V, typename U>
+   IxSqlRelation* relationOneToOne(V U::*pData, const QString& sKey, const QString& sForeignKey, const QString& sOwnerKey, long lVersion = 0);
    template <typename V, typename U> IxSqlRelation * relationManyToOne(V U::* pData, const QString & sKey, long lVersion = 0);
    template <typename V, typename U> IxSqlRelation * relationOneToMany(V U::* pData, const QString & sKey, const QString & sForeignKey, long lVersion = 0);
+   template <typename V, typename U>
+   IxSqlRelation* relationOneToMany(V U::*pData, const QString& sKey, const QString& sForeignKey, const QString& sOwnerKey, long lVersion = 0);
    template <typename V, typename U> IxSqlRelation * relationManyToMany(V U::* pData, const QString & sKey, const QString & sExtraTable, const QString & sForeignKeyOwner, const QString & sForeignKeyDataType, long lVersion = 0);
 
    template <typename V, typename U> IxDataMember * pimpl(V U::* pData, const QString & sKey);

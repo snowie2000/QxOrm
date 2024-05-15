@@ -92,6 +92,7 @@ public:
    IxDataMemberX * getDataMemberX() const;
    IxDataMember * getDataId() const;
    IxDataMember * getDataIdOwner() const;
+   IxDataMember* getDataAltId() const;
 
    void linkRelationKeyTo(IxDataMember * p);
    IxDataMember * getLinkRelationKey() const;
@@ -191,6 +192,7 @@ protected:
    void setForeignKey(const QString & s) const;
    void setForeignKeyOwner(const QString & s) const;
    void setForeignKeyDataType(const QString & s) const;
+   void setDataAltId(const QString& s) const;
    void setExtraTable(const QString & s) const;
 
 };

@@ -64,11 +64,11 @@
 #define QX_CONSTRUCT_IX_RELATION_MUTEX() m_mutex(QMutex::Recursive)
 #endif // (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 
-#define QX_CONSTRUCT_IX_RELATION() \
-m_pClass(NULL), m_pClassOwner(NULL), m_pDataMember(p), m_pDataMemberX(NULL), \
-m_pDataMemberId(NULL), m_pDataMemberIdOwner(NULL), m_lOffsetRelation(100), \
-m_eJoinType(qx::dao::sql_join::left_outer_join), m_eRelationType(IxSqlRelation::no_relation), \
-m_bInitInEvent(false), m_bInitDone(false), m_iIsSameDataOwner(0), m_pLinkRelationKey(NULL), QX_CONSTRUCT_IX_RELATION_MUTEX()
+#define QX_CONSTRUCT_IX_RELATION()                                                                           \
+    m_pClass(NULL), m_pClassOwner(NULL), m_pDataMember(p), m_pDataMemberX(NULL),                             \
+        m_pDataMemberId(NULL), m_pDataMemberIdOwner(NULL), m_pDataMemberAltId(NULL), m_lOffsetRelation(100), \
+        m_eJoinType(qx::dao::sql_join::left_outer_join), m_eRelationType(IxSqlRelation::no_relation),        \
+        m_bInitInEvent(false), m_bInitDone(false), m_iIsSameDataOwner(0), m_pLinkRelationKey(NULL), QX_CONSTRUCT_IX_RELATION_MUTEX()
 
 namespace qx {
 
@@ -84,12 +84,14 @@ struct Q_DECL_HIDDEN IxSqlRelation::IxSqlRelationImpl
    IxDataMemberX *                  m_pDataMemberX;         //!< Collection of 'IxDataMember' : parent of 'm_pDataMember'
    IxDataMember *                   m_pDataMemberId;        //!< 'IxDataMember' id of 'm_pDataMemberX'
    IxDataMember *                   m_pDataMemberIdOwner;   //!< 'IxDataMember' id of the owner
+   IxDataMember* m_pDataMemberAltId; //!< 'IxDataMember' alternative linked key of 'm_pDataMemberX'
    long                             m_lOffsetRelation;      //!< Generic offset for sql relation
    qx::dao::sql_join::join_type     m_eJoinType;            //!< Join type to build sql query
    IxSqlRelation::relation_type     m_eRelationType;        //!< Relation type : one-to-one, one-to-many, etc.
    QxSoftDelete                     m_oSoftDelete;          //!< Soft delete (or logical delete) behavior
    QxSoftDelete                     m_oSoftDeleteEmpty;     //!< Keep an empty soft delete instance (used with qx::QxSession::ignoreSoftDelete())
    QString                          m_sForeignKey;          //!< SQL query foreign key (1-n)
+   QString m_sOwnerKey; //!< SQL query owner key
    QString                          m_sExtraTable;          //!< Extra-table that holds the relationship (n-n)
    QString                          m_sForeignKeyOwner;     //!< SQL query foreign key for owner (n-n)
    QString                          m_sForeignKeyDataType;  //!< SQL query foreign key for data type (n-n)
@@ -178,6 +180,8 @@ IxDataMember * IxSqlRelation::getDataId() const { return m_pImpl->m_pDataMemberI
 
 IxDataMember * IxSqlRelation::getDataIdOwner() const { return m_pImpl->m_pDataMemberIdOwner; }
 
+IxDataMember* IxSqlRelation::getDataAltId() const { return m_pImpl->m_pDataMemberAltId; }
+
 void IxSqlRelation::linkRelationKeyTo(IxDataMember * p) { m_pImpl->m_pLinkRelationKey = p; }
 
 IxDataMember * IxSqlRelation::getLinkRelationKey() const { return m_pImpl->m_pLinkRelationKey; }
@@ -194,7 +198,9 @@ void IxSqlRelation::setForeignKey(const QString & s) const { m_pImpl->m_sForeign
 
 void IxSqlRelation::setForeignKeyOwner(const QString & s) const { m_pImpl->m_sForeignKeyOwner = s; }
 
-void IxSqlRelation::setForeignKeyDataType(const QString & s) const { m_pImpl->m_sForeignKeyDataType = s; }
+void IxSqlRelation::setForeignKeyDataType(const QString& s) const { m_pImpl->m_sForeignKeyDataType = s; }
+
+void IxSqlRelation::setDataAltId(const QString& s) const { m_pImpl->m_sOwnerKey = s; }
 
 void IxSqlRelation::setExtraTable(const QString & s) const { m_pImpl->m_sExtraTable = s; }
 
@@ -243,6 +249,16 @@ void IxSqlRelation::init()
       { QString sDebugMsg = "[QxOrm] Relationship '" + this->getKey() + "' from '" + (m_pImpl->m_pClassOwner ? m_pImpl->m_pClassOwner->getKey() : QString()) + "' to '" + (m_pImpl->m_pClass ? m_pImpl->m_pClass->getKey() : QString()) + "' : relation '" + p->getKey() + "' already exists in the collection"; qDebug() << sDebugMsg; }
 #endif // _QX_MODE_DEBUG
       m_pImpl->m_lstSqlRelationPtr->insert(p->getKey(), p->getSqlRelation());
+   }
+
+   if (m_pImpl->m_sOwnerKey != "" && m_pImpl->m_pClassOwner && m_pImpl->m_pClassOwner->getDataMemberX()) {
+       IxDataMemberX* m = m_pImpl->m_pClassOwner->getDataMemberX();
+       for (int i = 0; i < m->count_WithDaoStrategy(); ++i) {
+           if (m->get_WithDaoStrategy(i)->getKey() == m_pImpl->m_sOwnerKey) {
+               m_pImpl->m_pDataMemberAltId = m->get_WithDaoStrategy(i);
+               break;
+           }
+       }
    }
 
    if (m_pImpl->m_eRelationType == qx::IxSqlRelation::many_to_one)
@@ -785,7 +801,8 @@ void IxSqlRelation::eagerJoin_ManyToOne(QxSqlRelationParams & params) const
 void IxSqlRelation::eagerJoin_OneToMany(QxSqlRelationParams & params) const
 {
    QString & sql = params.sql();
-   IxDataMember * pId = this->getDataIdOwner(); qAssert(pId);
+   IxDataMember* pId = this->getDataAltId() ? this->getDataAltId() : this->getDataIdOwner(); // prefer custom owner key over the default id
+   qAssert(pId);
    IxDataMember * pForeign = this->getDataByKey(this->m_pImpl->m_sForeignKey); qAssert(pForeign);
    QString table = this->table(); QString tableAlias = this->tableAlias(params);
    QString tableRef = this->tableAliasOwner(params);
@@ -814,8 +831,11 @@ void IxSqlRelation::eagerJoin_OneToMany(QxSqlRelationParams & params) const
 void IxSqlRelation::eagerJoin_OneToOne(QxSqlRelationParams & params) const
 {
    QString & sql = params.sql();
-   IxDataMember * pId = this->getDataId(); qAssert(pId);
-   IxDataMember * pIdRef = this->getDataIdOwner(); qAssert(pIdRef);
+   IxDataMember* pForeign = this->m_pImpl->m_sForeignKey != "" ? this->getDataByKey(this->m_pImpl->m_sForeignKey) : nullptr;
+   IxDataMember* pId = pForeign ? pForeign : this->getDataId();
+   qAssert(pId);
+   IxDataMember* pIdRef = this->getDataAltId() ? this->getDataAltId() : this->getDataIdOwner();
+   qAssert(pIdRef);
    QString table = this->table(); QString tableAlias = this->tableAlias(params);
    QString tableRef = this->tableAliasOwner(params);
    if (! pId || ! pIdRef) { return; }

@@ -78,6 +78,10 @@ IxSqlRelation * QxClass<T>::relationOneToOne(V U::* pData, const QString & sKey,
 
 template <class T>
 template <typename V, typename U>
+IxSqlRelation* QxClass<T>::relationOneToOne(V U::*pData, const QString& sKey, const QString& sForeignKey, const QString& sOwnerKey, long lVersion /* = 0 */) { return this->dataMemberX()->relationOneToOne(pData, sKey, sForeignKey, sOwnerKey, lVersion); }
+
+template <class T>
+template <typename V, typename U>
 IxSqlRelation * QxClass<T>::relationManyToOne(V U::* pData, const QString & sKey, long lVersion /* = 0 */)
 { return this->dataMemberX()->relationManyToOne(pData, sKey, lVersion); }
 
@@ -85,6 +89,10 @@ template <class T>
 template <typename V, typename U>
 IxSqlRelation * QxClass<T>::relationOneToMany(V U::* pData, const QString & sKey, const QString & sForeignKey, long lVersion /* = 0 */)
 { return this->dataMemberX()->relationOneToMany(pData, sKey, sForeignKey, lVersion); }
+
+template <class T>
+template <typename V, typename U>
+IxSqlRelation* QxClass<T>::relationOneToMany(V U::*pData, const QString& sKey, const QString& sForeignKey, const QString& sOwnerKey, long lVersion /* = 0 */) { return this->dataMemberX()->relationOneToMany(pData, sKey, sForeignKey, sOwnerKey, lVersion); }
 
 template <class T>
 template <typename V, typename U>

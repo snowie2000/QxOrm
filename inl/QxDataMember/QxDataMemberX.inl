@@ -135,6 +135,23 @@ IxSqlRelation * QxDataMemberX<T>::relationOneToOne(V U::* pData, const QString &
 
 template <class T>
 template <typename V, typename U>
+IxSqlRelation* QxDataMemberX<T>::relationOneToOne(V U::*pData, const QString& sKey, const QString& sForeignKey, const QString& sOwnerKey, long lVersion /* = 0 */) {
+    typedef std::is_base_of<U, T> is_valid_class_tmp;
+    static_assert(is_valid_class_tmp::value, "is_valid_class_tmp::value");
+    if (exist_WithDaoStrategy(sKey)) {
+        qAssert(false);
+        return NULL;
+    }
+
+    IxDataMember* pDataMember = this->add(pData, sKey, lVersion);
+    IxSqlRelation* pSqlRelation = new QxSqlRelation_OneToOne<V, T>(pDataMember, sForeignKey, sOwnerKey);
+    pDataMember->setSqlRelation(pSqlRelation);
+
+    return pSqlRelation;
+}
+
+template <class T>
+template <typename V, typename U>
 IxSqlRelation * QxDataMemberX<T>::relationManyToOne(V U::* pData, const QString & sKey, long lVersion /* = 0 */)
 {
    typedef std::is_base_of<U, T> is_valid_class_tmp;
@@ -146,6 +163,23 @@ IxSqlRelation * QxDataMemberX<T>::relationManyToOne(V U::* pData, const QString 
    pDataMember->setSqlRelation(pSqlRelation);
 
    return pSqlRelation;
+}
+
+template <class T>
+template <typename V, typename U>
+IxSqlRelation* QxDataMemberX<T>::relationOneToMany(V U::*pData, const QString& sKey, const QString& sForeignKey, const QString& sOwnerKey, long lVersion /* = 0 */) {
+    typedef std::is_base_of<U, T> is_valid_class_tmp;
+    static_assert(is_valid_class_tmp::value, "is_valid_class_tmp::value");
+    if (exist_WithDaoStrategy(sKey)) {
+        qAssert(false);
+        return NULL;
+    }
+
+    IxDataMember* pDataMember = this->add(pData, sKey, lVersion);
+    IxSqlRelation* pSqlRelation = new QxSqlRelation_OneToMany<V, T>(pDataMember, sForeignKey, sOwnerKey);
+    pDataMember->setSqlRelation(pSqlRelation);
+
+    return pSqlRelation;
 }
 
 template <class T>

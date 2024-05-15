@@ -70,6 +70,13 @@ private:
 public:
 
    QxSqlRelation_OneToMany(IxDataMember * p, const QString & sForeignKey) : QxSqlRelation<DataType, Owner>(p) { this->setRelationType(qx::IxSqlRelation::one_to_many); this->setForeignKey(sForeignKey); qAssert(! this->getForeignKey().isEmpty()); }
+   QxSqlRelation_OneToMany(IxDataMember* p, const QString& sForeignKey, const QString& sOwnerKey)
+       : QxSqlRelation<DataType, Owner>(p) {
+       this->setRelationType(qx::IxSqlRelation::one_to_many);
+       this->setForeignKey(sForeignKey);
+       this->setDataAltId(sOwnerKey);
+       qAssert(!this->getForeignKey().isEmpty());
+   }
    virtual ~QxSqlRelation_OneToMany() { static_assert(is_data_container, "is_data_container"); }
 
    virtual QString getDescription() const                                     { return "relation one-to-many"; }

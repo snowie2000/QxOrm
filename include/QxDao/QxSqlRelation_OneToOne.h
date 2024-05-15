@@ -63,6 +63,12 @@ private:
 public:
 
    QxSqlRelation_OneToOne(IxDataMember * p) : QxSqlRelation<DataType, Owner>(p) { this->setRelationType(qx::IxSqlRelation::one_to_one); }
+   QxSqlRelation_OneToOne(IxDataMember* p, const QString& sForeignKey, const QString& sOwnerKey)
+       : QxSqlRelation<DataType, Owner>(p) {
+       this->setForeignKey(sForeignKey);
+       this->setDataAltId(sOwnerKey);
+       this->setRelationType(qx::IxSqlRelation::one_to_one);
+   }
    virtual ~QxSqlRelation_OneToOne() { ; }
 
    virtual QString getDescription() const                                     { return "relation one-to-one"; }
