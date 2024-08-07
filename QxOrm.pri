@@ -301,7 +301,7 @@ LIBS += -l$${QX_BOOST_LIB_SERIALIZATION_RELEASE}
 
 win32 {
 # For MinGW : we need to add these linker flags because of some issues to dll export extern template instantiations from shared library
-win32-g++: QMAKE_LFLAGS += -Wl,-export-all-symbols -Wl,-enable-auto-import
+# win32-g++: QMAKE_LFLAGS += -Wl,-export-all-symbols -Wl,-enable-auto-import
 } # win32
 
 #########################
