@@ -416,6 +416,7 @@ set(QX_HEADERS
     ./include/QxDaoRepository.h
     ./include/QxModelView.h
     ./include/QxServices.h
+    ./include/QxHook/QxFarLand.h
    )
 
 # To reduce compilation times, it is recommended to define _QX_UNITY_BUILD compilation option
@@ -565,6 +566,7 @@ else() # _QX_UNITY_BUILD
        ./src/QxModelView/QxNestedModel.cpp
        ./src/QxModelView/QxModelRowCompare.cpp
        ./src/main.cpp
+       ./src/QxHook/QxFarLand.cpp
       )
 
 endif() # _QX_UNITY_BUILD
